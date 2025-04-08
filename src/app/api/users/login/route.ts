@@ -21,14 +21,18 @@ export async function POST(request: NextRequest) {
         username: user.username,
         email: user.email,
     }
-    const token = jwt.sign(tokenData, process.env.JWT_SECRET, { expiresIn: "1d" });
+    const token = jwt.sign(tokenData, process.env.TOKEN_SECRET || "", { expiresIn: "1d" });
 
     const res = NextResponse.json({ message: "Login successful", user, token }, { status: 200 });
     res.cookies.set("token", token, {
         httpOnly: true,
     });
     return res;
-  } catch (error: any) {
-    return NextResponse.json({ message: "Login failed", error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json({ message: "Login failed", error: error.message }, { status: 500 });
+    } else {
+      return NextResponse.json({ message: "Login failed", error: "An unknown error occurred" }, { status: 500 });
+    }
   }
 }

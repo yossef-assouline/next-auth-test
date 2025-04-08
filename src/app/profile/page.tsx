@@ -2,11 +2,20 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import Link from "next/link";
+
+interface User {
+  _id: string;
+  username: string;
+  email: string;
+  isVerified: boolean;
+  isAdmin: boolean;
+}
+
 export default function Profile() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const handleLogout = async () => {
    try {
@@ -14,8 +23,12 @@ export default function Profile() {
     console.log(response);
     router.push("/login");
     toast.success("Logout successful");
-   } catch (error: any) {
-    toast.error(error.response.data.message);
+   } catch (error: unknown) {
+    if (error instanceof Error) {
+      toast.error(error.message);
+    } else {
+      toast.error("An unknown error occurred");
+    }
    }
   }
   const handleGetUser = async () => {

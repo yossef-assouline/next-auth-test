@@ -4,7 +4,7 @@ import { DB_NAME } from "../utils/constants";
 export const connectDB = async () => {
   try {
     const baseUri = process.env.MONGODB_URI?.split('?')[0] || '';
-    const connectionInstance = await mongoose.connect(
+    await mongoose.connect(
         baseUri,
         {
           dbName: DB_NAME,
@@ -19,8 +19,12 @@ export const connectDB = async () => {
     connection.on("error", (error) => {
       console.log("Error connecting to MongoDB:", error);
     });
-  } catch (error) {
-    console.log("Error connecting to MongoDB:", error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log("Error connecting to MongoDB:", error.message);
+    } else {
+      console.log("Error connecting to MongoDB:", "An unknown error occurred");
+    }
   }
 };
 

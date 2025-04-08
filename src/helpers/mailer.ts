@@ -4,8 +4,13 @@ import bcrypt from "bcryptjs";
 import { connectDB } from "@/dbConfig/dbConfig";
 connectDB();
 
+interface EmailParams {
+  email: string;
+  emailType: "VERIFY" | "reset-password";
+  userId: string;
+}
 
-export const sendEmail = async ({ email, emailType, userId }: any) => {
+export const sendEmail = async ({ email, emailType, userId }: EmailParams) => {
   try {
     const hashedToken = await bcrypt.hash(userId.toString(), 10);
 
@@ -170,7 +175,11 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
 
     const mailResponse = await transporter.sendMail(mailOptions);
     return mailResponse;
-  } catch (error: any) {
-    throw new Error(error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("An unknown error occurred");
+    }
   }
 };

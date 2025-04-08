@@ -15,7 +15,11 @@ export async function POST(request: NextRequest) {
     try {
         await sendEmail({ email: user.email, emailType: "reset-password", userId: user._id });
         return NextResponse.json({ message: "Reset link sent to email" }, { status: 200 });
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        } else {
+            return NextResponse.json({ error: "An unknown error occurred" }, { status: 500 });
+        }
     }
 }

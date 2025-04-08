@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/userModel";
 import { connectDB } from "@/dbConfig/dbConfig";
-import { sendEmail } from "@/helpers/mailer";
+
 import bcrypt from "bcryptjs";
 connectDB();
 
@@ -34,9 +34,15 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ 
             message: "Password reset successfully" 
         }, { status: 200 });
-    } catch (error: any) {
-        return NextResponse.json({ 
-            error: error.message || "Error resetting password" 
-        }, { status: 500 });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            return NextResponse.json({ 
+                error: error.message || "Error resetting password" 
+            }, { status: 500 });
+        } else {
+            return NextResponse.json({ 
+                error: "An unknown error occurred" 
+            }, { status: 500 });
+        }
     }
 }

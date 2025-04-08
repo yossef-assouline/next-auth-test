@@ -22,9 +22,14 @@ const Login = () => {
       console.log(response);
       toast.success("Login successful");
       router.push("/profile");
-    } catch (error: any) {
-      console.log(error.response.data);
-      toast.error(error.response.data.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log(error.message);
+        toast.error(error.message);
+      } else {
+        console.log(error);
+        toast.error("An unknown error occurred");
+      }
     }
   };
 
@@ -36,8 +41,12 @@ const Login = () => {
       toast.success(response.data.message);
       setShowForgotPassword(false);
       setForgotEmail("");
-    } catch (error: any) {
-      toast.error(error.response.data.error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     } finally {
       setLoading(false);
     }
@@ -76,7 +85,7 @@ const Login = () => {
         >
           Forgot Password?
         </button>
-        <Link href="/signup">Don't have an account? Sign up</Link>
+        <Link href="/signup">Don&apos;t have an account? Sign up</Link>
       </form>
 
       {showForgotPassword && (

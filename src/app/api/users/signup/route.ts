@@ -29,10 +29,11 @@ export async function POST(request: NextRequest) {
     //SEND EMAIL
     await sendEmail({ email, emailType: "VERIFY", userId: savedUser._id });
     return NextResponse.json({ message: "User created successfully", savedUser });
-  } catch (error: any) {
-    return NextResponse.json(
-      { message: "User creation failed", error: error.message },
-      { status: 500 }
-    );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json({ message: "User creation failed", error: error.message }, { status: 500 });
+    } else {
+      return NextResponse.json({ message: "User creation failed", error: "An unknown error occurred" }, { status: 500 });
+    }
   }
 }

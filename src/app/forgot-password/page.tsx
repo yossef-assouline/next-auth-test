@@ -8,7 +8,6 @@ import Link from "next/link";
 export default function ForgotPasswordPage() {
     const router = useRouter();
     const [token, setToken] = useState("");
-    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -40,9 +39,14 @@ export default function ForgotPasswordPage() {
             toast.success(response.data.message);
             // Redirect to login page after successful reset
             router.push("/login");
-        } catch (error: any) {
-            setError(error.response.data.error);
-            toast.error(error.response.data.error);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setError(error.message);
+                toast.error(error.message);
+            } else {
+                setError("An unknown error occurred");
+                toast.error("An unknown error occurred");
+            }
         } finally {
             setLoading(false);
         }
